@@ -2,7 +2,7 @@
     let message = 'Hey there world !!';
     let ind = 0;
     const messageArray = Array(5).fill(message);
-    const inputElement = document.querySelector('[aria-label="Type a message"][contenteditable="true"]');
+    const inputElement = document.querySelector('[aria-placeholder="Type a message"][contenteditable="true"]');
     const sendButtonParentElement = document.querySelector('[data-tab="11"]').parentElement;
 
     const mutationCallback = ([,newRecord]) => {
