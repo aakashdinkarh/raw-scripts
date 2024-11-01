@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <style>
+      ul {
+        list-style-type: none;
+        padding-left: 0;
+        width: fit-content;
+      }
+
+      ul li {
+        height: 50px;
+        width: 50px;
+        background-color: black;
+      }
+
+      ul li.white {
+        background-color: white;
+      }
+      ul li.red {
+        background-color: red;
+      }
+      ul ul {
+        display: flex;
+      }
+      body > ul {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <ul>
+    </ul>
+
+    <script>
+      const chessSize = 8;
+      const row = Array.from({ length: 8 }, (_,i) => i);
+      const chess = Array.from({ length: 8 }, (_, i) => Array.from(row));
+
+      const ul = document.querySelector('ul');
+
+      chess.forEach((row, rowIndex) => {
+        const isFirstWhite = rowIndex % 2 === 0;
+
+        const rowUl = document.createElement('ul');
+
+        row.forEach((item) => {
+          const isTileWhite = isFirstWhite ? item % 2 === 0 : item % 2 !== 0;
+
+          const li = document.createElement('li');
+          li.className = isTileWhite ? 'white' : 'black';
+          li.dataset['position'] = rowIndex + ' ' + item;
+
+          rowUl.append(li);
+        });
+
+        ul.append(rowUl);
+      });
+
+      const getDiagonalElementPositions = (x, y) => {
+        const diagonals = [];
+
+        let localX = +x, localY = +y;
+
+        while (localX < chessSize && localY < chessSize) {
+          diagonals.push([localX, localY]);
+
+          localX++;
+          localY++;
+        }
+
+        localX = +x, localY = +y;
+        localX--;
+        localY--;
+        while (localX >= 0 && localY >= 0) {
+          diagonals.push([localX, localY]);
+
+          localX--;
+          localY--;
+        }
+
+
+        // 2nd diagonal
+        localX = +x, localY = +y;
+        while (localX >= 0 && localY < chessSize) {
+          diagonals.push([localX, localY]);
+
+          localX--;
+          localY++;
+        }
+
+
+        localX = +x, localY = +y;
+        while (localY >= 0 && localX < chessSize) {
+          diagonals.push([localX, localY]);
+
+          localX++;
+          localY--;
+        }
+
+        
+        return diagonals;
+      };
+
+      const highlightBoxes = (boxes = []) => {
+        const rows = ul.children;
+
+        boxes.forEach(([row, col]) => {
+          const cols = rows[row].children;
+
+          const highlightItem = cols[col];
+          highlightItem.classList.add('red');
+        })
+      }
+
+      const clickEventListener = (e) => {
+        const targetElement = e.target;
+
+        if (targetElement.nodeName !== 'LI') {
+          return;
+        }
+        if (!(targetElement.classList.contains('white') || targetElement.classList.contains('black'))) {
+          return;
+        };
+
+        Array.from(ul.children).forEach((row) => {
+          Array.from(row.children).forEach((item) => {
+            item.classList.remove('red');
+          });
+        })
+
+        const [rowIndex, colIndex] = targetElement.dataset.position.split(' ');
+
+        const diagonals = getDiagonalElementPositions(rowIndex, colIndex);
+        highlightBoxes(diagonals);
+      }
+
+      ul.addEventListener('click', clickEventListener);
+
+
+    </script>
+  </body>
+</html>
